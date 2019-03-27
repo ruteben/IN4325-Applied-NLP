@@ -1,5 +1,6 @@
 """This file contains all functions to perform the linguistic analysis, see section 3.2.2"""
 import basics
+from collections import Counter
 
 def num_of_characters(x):
     """Measure the number of characters in x
@@ -98,14 +99,21 @@ def num_of_common_words(keywords, cont_x):
     """Measure the number of words the article keywords and content element have in common
 
     :param keywords: keywords of article
-    :type keywords: str
+    :type keywords: list[str]
     :param cont_x:
     :type cont_x:
     :return: number of words keywords and cont_x have in common
     :rtype: int
     """
-    
-    return 0
+    #Assuming the keywords have been processed and each element is a single keyword
+    cont_x = basics.words(cont_x)
+    counter = 0
+
+    for word in cont_x:
+        if word in keywords:
+            counter += 1
+
+    return counter
 
 
 def number_of_formal_words(x):
@@ -138,7 +146,7 @@ def percent_of_formal_words(x):
     :return: ratio between formal and informal words of a content element
     :rtype: float
     """
-    return -1
+    return number_of_formal_words(basics.words(x))/num_of_words(x)
 
 
 def percent_of_informal_words(x):
@@ -149,4 +157,4 @@ def percent_of_informal_words(x):
     :return: ratio between informal and formal words of a content element
     :rtype: float
     """
-    return -1
+    return number_of_informal_words(basics.words(x))/num_of_words(x)
