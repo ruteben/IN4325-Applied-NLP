@@ -1,5 +1,5 @@
 """This file contains all functions to perform the linguistic analysis, see section 3.2.2"""
-
+import basics
 
 def num_of_characters(x):
     """Measure the number of characters in x
@@ -9,8 +9,11 @@ def num_of_characters(x):
     :return: number of characters in x, or -1 if x contains no characters
     :rtype: int
     """
-    print("asdf")
-    return -1
+    if type(x) is list:
+        seperator = ""
+        x = seperator.join(x)
+
+    return len(x)
 
 
 def diff_num_of_characters(cont_x, cont_y):
@@ -23,11 +26,12 @@ def diff_num_of_characters(cont_x, cont_y):
     :return: difference between the number of characters in cont_x and cont_y
     :rtype: int
     """
-    return 0
+
+    return abs(num_of_characters(cont_x) - num_of_characters(cont_y))
 
 
 def num_of_characters_ratio(cont_x, cont_y):
-    """Measure the ratio between the number of characters of two content elements
+    """Measure the ratio between the number of characters of two content elements. Divides cont_x by cont_y
 
     :param cont_x:
     :type cont_x:
@@ -36,7 +40,11 @@ def num_of_characters_ratio(cont_x, cont_y):
     :return: ratio between the number of characters of two content elements, -1 if either is None
     :rtype: float
     """
-    return -1
+
+    if cont_x is None or cont_y is None:
+        return -1
+    else:
+        return abs(num_of_characters(cont_x)/num_of_characters(cont_y))
 
 
 def num_of_words(x):
@@ -47,7 +55,12 @@ def num_of_words(x):
     :return: number of words in x, or -1 if x contains no words
     :rtype: int
     """
-    return -1
+
+    if type(x) is list:
+        seperator = " "
+        x = seperator.join(x)
+
+    return len(x.split())
 
 
 def diff_num_of_words(cont_x, cont_y):
@@ -60,11 +73,12 @@ def diff_num_of_words(cont_x, cont_y):
     :return: difference between the number of words in two content elements
     :rtype: int
     """
-    return 0
+
+    return abs(num_of_words(cont_x) - num_of_words(cont_y))
 
 
 def num_of_words_ratio(cont_x, cont_y):
-    """Measure the ratio between the number of words of two content elements
+    """Measure the ratio between the number of words of two content elements. Divides cont_x by cont_y
 
     :param cont_x:
     :type cont_x:
@@ -73,7 +87,11 @@ def num_of_words_ratio(cont_x, cont_y):
     :return: ratio between the number of words of two content elements, -1 if either is None
     :rtype: float
     """
-    return -1
+    
+    if cont_x is None or cont_y is None:
+        return -1
+    else:
+        return abs(num_of_words(cont_x)/num_of_words(cont_y))
 
 
 def num_of_common_words(keywords, cont_x):
@@ -86,6 +104,7 @@ def num_of_common_words(keywords, cont_x):
     :return: number of words keywords and cont_x have in common
     :rtype: int
     """
+    
     return 0
 
 
@@ -97,7 +116,7 @@ def number_of_formal_words(x):
     :return: number of formal words in content element x
     :rtype: int
     """
-    return 0
+    return len(basics.lang_dict_formal((basics.words(x))))
 
 
 def number_of_informal_words(x):
@@ -108,7 +127,7 @@ def number_of_informal_words(x):
     :return: number of informal words in content element x
     :rtype: int
     """
-    return 0
+    return len(basics.lang_dict_informal((basics.words(x))))
 
 
 def percent_of_formal_words(x):
