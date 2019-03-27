@@ -10,11 +10,7 @@ def num_of_characters(x):
     :return: number of characters in x, or -1 if x contains no characters
     :rtype: int
     """
-    if type(x) is list:
-        seperator = ""
-        x = seperator.join(x)
-
-    return len(x)
+    return basics.len_characters(x)
 
 
 def diff_num_of_characters(cont_x, cont_y):
@@ -57,11 +53,7 @@ def num_of_words(x):
     :rtype: int
     """
 
-    if type(x) is list:
-        seperator = " "
-        x = seperator.join(x)
-
-    return len(x.split())
+    return basics.len_words(x)
 
 
 def diff_num_of_words(cont_x, cont_y):
@@ -105,7 +97,7 @@ def num_of_common_words(keywords, cont_x):
     :return: number of words keywords and cont_x have in common
     :rtype: int
     """
-    #Assuming the keywords have been processed and each element is a single keyword
+    keywords = basics.words(keywords)
     cont_x = basics.words(cont_x)
     counter = 0
 

@@ -1,8 +1,8 @@
 """This file contains all functions to extract the basic content related features"""
 import io
 import json
-from PIL import Image
-
+import re
+from PyDictionary import PyDictionary
 
 def post_img(p):
     """Get the image of a post
@@ -34,17 +34,17 @@ def post_title(p):
     :return: title/text of the post
     :rtype: str
     """
-    return None
+    return p["postText"]
 
 
 def article_title(p):
     """Get article title
-   :param p: post
-   :type p: dict
-   :return: title of article of post
-   :rtype: str
+    :param p: post
+    :type p: dict
+    :return: title of article of post
+    :rtype: str
     """
-    return None
+    return p["targetTitle"]
 
 
 def article_description(p):
@@ -55,7 +55,7 @@ def article_description(p):
     :return: description of article of post
     :rtype: str
     """
-    return None
+    return p["targetDescription"]
 
 
 def article_keywords(p):
@@ -64,9 +64,9 @@ def article_keywords(p):
     :param p: post
     :type p: dict
     :return: keywords of article of post
-    :rtype: str
+    :rtype: list[str]
     """
-    return None
+    return p["targetKeywords"]
 
 
 def article_paragraphs(p):
@@ -77,7 +77,7 @@ def article_paragraphs(p):
     :return: paragraphs of article of post
     :rtype: list[str]
     """
-    return None
+    return p["targetParagraphs"]
 
 
 def article_captions(p) -> None:
@@ -88,7 +88,7 @@ def article_captions(p) -> None:
     :return: captions of article of post
     :rtype: list[str]
     """
-    return None
+    return p["targetCaptions"]
 
 
 def len_characters(content):
@@ -99,7 +99,14 @@ def len_characters(content):
     :return: number of characters in content, or -1 if no available content
     :rtype: int
     """
-    return -1
+    if content is None:
+        return -1
+
+    if type(x) is list:
+        seperator = ""
+        x = seperator.join(x)
+    
+    return len(x)
 
 
 def len_words(content):
@@ -110,18 +117,25 @@ def len_words(content):
     :return: number of words in content, or -1 if no available content
     :rtype: int
     """
-    return -1
+    return len(words(content))
 
-
+#Assumption: We remove interpunction, numbers and convert all letters to lowercase for easy comparison between words
 def words(content):
-    """Get the set of words in the content
+    """Get the set of words in the content. Note: Removes interpunction, numbers and capital letters in the process
 
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: set of words in content
     :rtype: set[str]
     """
-    return None
+
+    if type(content) is list:
+        seperator = " "
+        content = seperator.join(content)
+    
+    regex = re.sub("[^a-zA-Z\s]", "", content).lower()
+
+    return regex.split()
 
 
 def lang_dict_formal(words):
@@ -165,11 +179,16 @@ def process(post):
     with open("../data/preprocessed.jsonl", 'a') as output_file:
         # write post to file
         # output_file.write(json.dumps(post))
-        print(post)
+        print(words(post_title(post)))
 
 
 if __name__ == '__main__':
+    counter = 0   
     with io.open("../data/instances.jsonl", 'r') as input_file:
         for line in input_file:
+            if counter == 10:
+                break
             post = json.loads(line)
             process(post)
+            counter += 1
+
