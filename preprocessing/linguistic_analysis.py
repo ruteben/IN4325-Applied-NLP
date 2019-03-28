@@ -1,6 +1,8 @@
 """This file contains all functions to perform the linguistic analysis, see section 3.2.2"""
+
 import basics
 from collections import Counter
+
 
 def num_of_characters(x):
     """Measure the number of characters in x

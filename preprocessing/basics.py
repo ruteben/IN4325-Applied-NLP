@@ -3,6 +3,8 @@ import io
 import json
 import re
 from PyDictionary import PyDictionary
+from nltk.corpus import wordnet as wn
+#Note: wordnet corpus should be downloaded. In order to download it run: nltk.download()
 
 def post_img(p):
     """Get the image of a post
@@ -93,6 +95,7 @@ def article_captions(p) -> None:
 
 def len_characters(content):
     """Get number of characters in content
+    If the content is a list, it returns the average number of characters per element
 
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
@@ -102,22 +105,36 @@ def len_characters(content):
     if content is None:
         return -1
 
-    if type(x) is list:
-        seperator = ""
-        x = seperator.join(x)
+    if type(content) is list:
+        cumulative = 0
+        for element in content:
+            cumulative += len(element)
+        return int(cumulative/len(content))
     
-    return len(x)
+    return len(content)
 
-
+#Assumption: Return the total number of words (not number of unique words)
 def len_words(content):
     """Get number of words in content
+    If the content is a list, it returns the average number of words per element
 
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: number of words in content, or -1 if no available content
     :rtype: int
     """
-    return len(words(content))
+    if content is None:
+        return -1
+
+    if type(content) is list:
+        cumulative = 0
+        for element in content:
+            regex = re.sub("[^a-zA-Z\s]", "", element)
+            cumulative += len(regex.split())
+        return int(cumulative/len(content))
+    
+    regex = re.sub("[^a-zA-Z\s]", "", content).lower()
+    return len(regex.split())
 
 #Assumption: We remove interpunction, numbers and convert all letters to lowercase for easy comparison between words
 def words(content):
@@ -135,9 +152,10 @@ def words(content):
     
     regex = re.sub("[^a-zA-Z\s]", "", content).lower()
 
-    return regex.split()
+    return set(regex.split())
 
 
+#Assumption: WordNet is the same in pydicionary and NLTK. As we use NLTK instead of pydictionary
 def lang_dict_formal(words):
     """Get the set of formal words from a set of words
 
@@ -147,6 +165,11 @@ def lang_dict_formal(words):
     :rtype: set[str]
     """
     formal_set = set([])
+
+    for word in words:
+        if len(wn.synsets(word)) != 0:
+            formal_set.add(word)
+
     return formal_set
 
 
@@ -159,6 +182,11 @@ def lang_dict_informal(words):
     :rtype: set[str]
     """
     informal_set = set([])
+
+    for word in words:
+        if len(wn.synsets(word)) == 0:
+            informal_set.add(word)
+
     return informal_set
 
 
@@ -180,6 +208,7 @@ def process(post):
         # write post to file
         # output_file.write(json.dumps(post))
         print(words(post_title(post)))
+        #print(lang_dict_informal(words(post_title(post))))
 
 
 if __name__ == '__main__':
