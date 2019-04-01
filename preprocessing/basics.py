@@ -1,10 +1,9 @@
 """This file contains all functions to extract the basic content related features"""
-import io
-import json
-import re
-from PyDictionary import PyDictionary
 from nltk.corpus import wordnet as wn
-#Note: wordnet corpus should be downloaded. In order to download it run: nltk.download()
+
+
+# Note: wordnet corpus should be downloaded. In order to download it run: nltk.download()
+
 
 def post_img(p):
     """Get the image of a post
@@ -102,18 +101,19 @@ def len_characters(content):
     :return: number of characters in content, or -1 if no available content
     :rtype: int
     """
-    if content is None:
+    if not content:
         return -1
 
     if type(content) is list:
         cumulative = 0
         for element in content:
             cumulative += len(element)
-        return int(cumulative/len(content))
-    
+        return int(cumulative / len(content))
+
     return len(content)
 
-#Assumption: Return the total number of words (not number of unique words)
+
+# Assumption: Return the total number of words (not number of unique words)
 def len_words(content):
     """Get number of words in content
     If the content is a list, it returns the average number of words per element
@@ -123,20 +123,19 @@ def len_words(content):
     :return: number of words in content, or -1 if no available content
     :rtype: int
     """
-    if content is None:
+    if not content:
         return -1
 
     if type(content) is list:
         cumulative = 0
         for element in content:
-            regex = re.sub("[^a-zA-Z\s]", "", element)
-            cumulative += len(regex.split())
-        return int(cumulative/len(content))
-    
-    regex = re.sub("[^a-zA-Z\s]", "", content).lower()
-    return len(regex.split())
+            cumulative += len(element.split())
+        return int(cumulative / len(content))
 
-#Assumption: We remove interpunction, numbers and convert all letters to lowercase for easy comparison between words
+    return len(content.split())
+
+
+# Assumption: We remove punctuation, numbers and convert all letters to lowercase for easy comparison between words
 def words(content):
     """Get the set of words in the content. Note: Removes interpunction, numbers and capital letters in the process
 
@@ -147,15 +146,13 @@ def words(content):
     """
 
     if type(content) is list:
-        seperator = " "
-        content = seperator.join(content)
-    
-    regex = re.sub("[^a-zA-Z\s]", "", content).lower()
+        separator = " "
+        content = separator.join(content)
 
-    return set(regex.split())
+    return set(content.split())
 
 
-#Assumption: WordNet is the same in pydicionary and NLTK. As we use NLTK instead of pydictionary
+# Assumption: WordNet is the same in pydictionary and NLTK. As we use NLTK instead of pydictionary
 def lang_dict_formal(words):
     """Get the set of formal words from a set of words
 
@@ -188,36 +185,3 @@ def lang_dict_informal(words):
             informal_set.add(word)
 
     return informal_set
-
-
-def process(post):
-    # Existing fields:
-    #   postMedia(optional): relative link to image used in post
-    #   postText: text used in post
-    #   id: post id
-    #   targetCaptions: list of captions of images in target article
-    #   targetParagraphs: list of paragraphs in target article
-    #   targetTitle: title of target article
-    #   postTimestamp: timestamp of post, formatted as "%a %b %d %H:%M%:%S %z %Y"
-    #   targetKeywords: keywords in target article
-    #   targetDescription: description of target article
-
-    # add all other fields to post by calling all the functions
-    # in image_related.py, linguistic_analysis.py and abuser_detection.py
-    with open("../data/preprocessed.jsonl", 'a') as output_file:
-        # write post to file
-        # output_file.write(json.dumps(post))
-        print(words(post_title(post)))
-        #print(lang_dict_informal(words(post_title(post))))
-
-
-if __name__ == '__main__':
-    counter = 0   
-    with io.open("../data/instances.jsonl", 'r') as input_file:
-        for line in input_file:
-            if counter == 10:
-                break
-            post = json.loads(line)
-            process(post)
-            counter += 1
-

@@ -1,7 +1,6 @@
 """This file contains all functions to perform the linguistic analysis, see section 3.2.2"""
 
-import basics
-from collections import Counter
+from preprocessing import basics
 
 
 def num_of_characters(x):
@@ -40,7 +39,7 @@ def num_of_characters_ratio(cont_x, cont_y):
     :rtype: float
     """
 
-    if cont_x is None or cont_y is None:
+    if not cont_x or not cont_y:
         return -1
     else:
         return abs(num_of_characters(cont_x)/num_of_characters(cont_y))
@@ -83,7 +82,7 @@ def num_of_words_ratio(cont_x, cont_y):
     :rtype: float
     """
     
-    if cont_x is None or cont_y is None:
+    if not cont_x or not cont_y:
         return -1
     else:
         return abs(num_of_words(cont_x)/num_of_words(cont_y))
@@ -118,7 +117,7 @@ def number_of_formal_words(x):
     :return: number of formal words in content element x
     :rtype: int
     """
-    return len(basics.lang_dict_formal((basics.words(x))))
+    return len(basics.lang_dict_formal(basics.words(x)))
 
 
 def number_of_informal_words(x):
@@ -129,7 +128,7 @@ def number_of_informal_words(x):
     :return: number of informal words in content element x
     :rtype: int
     """
-    return len(basics.lang_dict_informal((basics.words(x))))
+    return len(basics.lang_dict_informal(basics.words(x)))
 
 
 def percent_of_formal_words(x):
@@ -140,7 +139,7 @@ def percent_of_formal_words(x):
     :return: ratio between formal and informal words of a content element
     :rtype: float
     """
-    return number_of_formal_words(basics.words(x))/num_of_words(x)
+    return number_of_formal_words(x)/num_of_words(x)
 
 
 def percent_of_informal_words(x):
@@ -151,4 +150,4 @@ def percent_of_informal_words(x):
     :return: ratio between informal and formal words of a content element
     :rtype: float
     """
-    return number_of_informal_words(basics.words(x))/num_of_words(x)
+    return number_of_informal_words(x)/num_of_words(x)
