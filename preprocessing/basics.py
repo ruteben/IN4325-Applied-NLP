@@ -188,36 +188,3 @@ def lang_dict_informal(words):
             informal_set.add(word)
 
     return informal_set
-
-
-def process(post):
-    # Existing fields:
-    #   postMedia(optional): relative link to image used in post
-    #   postText: text used in post
-    #   id: post id
-    #   targetCaptions: list of captions of images in target article
-    #   targetParagraphs: list of paragraphs in target article
-    #   targetTitle: title of target article
-    #   postTimestamp: timestamp of post, formatted as "%a %b %d %H:%M%:%S %z %Y"
-    #   targetKeywords: keywords in target article
-    #   targetDescription: description of target article
-
-    # add all other fields to post by calling all the functions
-    # in image_related.py, linguistic_analysis.py and abuser_detection.py
-    with open("../data/preprocessed.jsonl", 'a') as output_file:
-        # write post to file
-        # output_file.write(json.dumps(post))
-        print(words(post_title(post)))
-        #print(lang_dict_informal(words(post_title(post))))
-
-
-if __name__ == '__main__':
-    counter = 0   
-    with io.open("../data/instances.jsonl", 'r') as input_file:
-        for line in input_file:
-            if counter == 10:
-                break
-            post = json.loads(line)
-            process(post)
-            counter += 1
-
