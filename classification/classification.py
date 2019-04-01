@@ -18,9 +18,11 @@ with open('../../NLP_data/preprocessed.csv') as file:
     i = 0
     for row in datafile:
         i = i + 1
-        if row and i != 0:
+        if row and i > 1:  # I have the feeling it skips 2i every time here but I don't know why
             row_no_id = row[1:]
             data.append(row_no_id)
+
+data = np.array(data)
 
 truth = []
 with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
@@ -29,6 +31,21 @@ with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
             truth.append(1)
         else:
             truth.append(0)
+
+truth = np.array(truth)
+print(truth)
+# print(data)
+
+size_train = round(0.8*len(data))
+
+data_train = data[:size_train]
+data_test = data[size_train:]
+
+labels_train = truth[:size_train]
+labels_test = truth[size_train:]
+
+dtrain = xgb.DMatrix(data_train, label=labels_train)
+dtest = xgb.DMatrix(data_test, label=labels_test)
 
 param = {
     'max_depth': 5,  # the maximum depth of each tree,
@@ -39,19 +56,22 @@ param = {
     'scale_pos_weight': 1,
     'eta': 0.3,  # the training step for each iteration
     'silent': 1,  # logging mode - quiet
-    'objective': 'binary',  # error evaluation for two-class training
-    'num_class': 3  # the number of classes that exist in this datset
+    'objective': 'binary:logistic',  # error evaluation for two-class training
 }
 
 bst = xgb.train(param, dtrain)
 # make prediction
 preds = bst.predict(dtest)
 best_preds = np.asarray([np.argmax(line) for line in preds])
+
+for number in best_preds:
+    print(number)
+
 print(best_preds)
-print(precision_score(y_test, best_preds, average='macro'))
-print(recall_score(y_test, best_preds, average='macro'))
-print(accuracy_score(y_test, best_preds))
-print(roc_auc_score(y_test, best_preds))
+print(precision_score(labels_test, best_preds, average='macro'))
+print(recall_score(labels_test, best_preds, average='macro'))
+print(accuracy_score(labels_test, best_preds))
+print(roc_auc_score(labels_test, best_preds))
 
 
 
