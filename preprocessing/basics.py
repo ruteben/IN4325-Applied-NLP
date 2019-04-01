@@ -1,8 +1,10 @@
 """This file contains all functions to extract the basic content related features"""
 import io
 import json
-from PIL import Image
-
+import re
+from PyDictionary import PyDictionary
+from nltk.corpus import wordnet as wn
+#Note: wordnet corpus should be downloaded. In order to download it run: nltk.download()
 
 def post_img(p):
     """Get the image of a post
@@ -34,17 +36,17 @@ def post_title(p):
     :return: title/text of the post
     :rtype: str
     """
-    return None
+    return p["postText"]
 
 
 def article_title(p):
     """Get article title
-   :param p: post
-   :type p: dict
-   :return: title of article of post
-   :rtype: str
+    :param p: post
+    :type p: dict
+    :return: title of article of post
+    :rtype: str
     """
-    return None
+    return p["targetTitle"]
 
 
 def article_description(p):
@@ -55,7 +57,7 @@ def article_description(p):
     :return: description of article of post
     :rtype: str
     """
-    return None
+    return p["targetDescription"]
 
 
 def article_keywords(p):
@@ -64,9 +66,9 @@ def article_keywords(p):
     :param p: post
     :type p: dict
     :return: keywords of article of post
-    :rtype: str
+    :rtype: list[str]
     """
-    return None
+    return p["targetKeywords"]
 
 
 def article_paragraphs(p):
@@ -77,7 +79,7 @@ def article_paragraphs(p):
     :return: paragraphs of article of post
     :rtype: list[str]
     """
-    return None
+    return p["targetParagraphs"]
 
 
 def article_captions(p) -> None:
@@ -88,42 +90,72 @@ def article_captions(p) -> None:
     :return: captions of article of post
     :rtype: list[str]
     """
-    return None
+    return p["targetCaptions"]
 
 
 def len_characters(content):
     """Get number of characters in content
+    If the content is a list, it returns the average number of characters per element
 
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: number of characters in content, or -1 if no available content
     :rtype: int
     """
-    return -1
+    if content is None:
+        return -1
 
+    if type(content) is list:
+        cumulative = 0
+        for element in content:
+            cumulative += len(element)
+        return int(cumulative/len(content))
+    
+    return len(content)
 
+#Assumption: Return the total number of words (not number of unique words)
 def len_words(content):
     """Get number of words in content
+    If the content is a list, it returns the average number of words per element
 
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: number of words in content, or -1 if no available content
     :rtype: int
     """
-    return -1
+    if content is None:
+        return -1
 
+    if type(content) is list:
+        cumulative = 0
+        for element in content:
+            regex = re.sub("[^a-zA-Z\s]", "", element)
+            cumulative += len(regex.split())
+        return int(cumulative/len(content))
+    
+    regex = re.sub("[^a-zA-Z\s]", "", content).lower()
+    return len(regex.split())
 
+#Assumption: We remove interpunction, numbers and convert all letters to lowercase for easy comparison between words
 def words(content):
-    """Get the set of words in the content
+    """Get the set of words in the content. Note: Removes interpunction, numbers and capital letters in the process
 
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: set of words in content
     :rtype: set[str]
     """
-    return None
+
+    if type(content) is list:
+        seperator = " "
+        content = seperator.join(content)
+    
+    regex = re.sub("[^a-zA-Z\s]", "", content).lower()
+
+    return set(regex.split())
 
 
+#Assumption: WordNet is the same in pydicionary and NLTK. As we use NLTK instead of pydictionary
 def lang_dict_formal(words):
     """Get the set of formal words from a set of words
 
@@ -133,6 +165,11 @@ def lang_dict_formal(words):
     :rtype: set[str]
     """
     formal_set = set([])
+
+    for word in words:
+        if len(wn.synsets(word)) != 0:
+            formal_set.add(word)
+
     return formal_set
 
 
@@ -145,6 +182,11 @@ def lang_dict_informal(words):
     :rtype: set[str]
     """
     informal_set = set([])
+
+    for word in words:
+        if len(wn.synsets(word)) == 0:
+            informal_set.add(word)
+
     return informal_set
 
 
@@ -165,11 +207,17 @@ def process(post):
     with open("../data/preprocessed.jsonl", 'a') as output_file:
         # write post to file
         # output_file.write(json.dumps(post))
-        print(post)
+        print(words(post_title(post)))
+        #print(lang_dict_informal(words(post_title(post))))
 
 
 if __name__ == '__main__':
+    counter = 0   
     with io.open("../data/instances.jsonl", 'r') as input_file:
         for line in input_file:
+            if counter == 10:
+                break
             post = json.loads(line)
             process(post)
+            counter += 1
+
