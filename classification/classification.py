@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import recall_score
+from sklearn.metrics import roc_auc_score
 import jsonlines
 import json
 
@@ -54,3 +55,4 @@ print(best_preds)
 print(precision_score(y_test, best_preds, average='macro'))
 print(recall_score(y_test, best_preds, average='macro'))
 print(accuracy_score(y_test, best_preds))
+# print(roc_auc_score(y_test, best_preds))
