@@ -26,17 +26,24 @@ dtest = xgb.DMatrix(X_test, label=y_test)
 truth = []
 with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
     for obj in json_file:
-        if obj['truthClass'] == 'no-clickbait':
-            truth.append(0)
-        else:
+        if obj['truthClass'] == 'clickbait':
             truth.append(1)
+        else:
+            truth.append(0)
+
+print(truth)
 
 param = {
-    'max_depth': 3,  # the maximum depth of each tree
+    'max_depth': 5,  # the maximum depth of each tree,
+    'min_child_weight': 1,
+    'gamma': 0,
+    'subsample': 0.8,
+    'colsample_bytree': 0.8,
+    'scale_pos_weight': 1,
     'eta': 0.3,  # the training step for each iteration
     'silent': 1,  # logging mode - quiet
     'objective': 'multi:softprob',  # error evaluation for multiclass training
-    'num_class': 3 # the number of classes that exist in this datset
+    'num_class': 3  # the number of classes that exist in this datset
 }
 
 bst = xgb.train(param, dtrain)
