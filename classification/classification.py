@@ -53,11 +53,7 @@ def create_DMatrices(data, labels, test_size):
     return [dtrain, dtest, labels_test]
 
 
-def train_model(params):
-    data = get_data()
-    labels = get_labels()
-    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
-
+def train_model(dtrain, dtest, labels_test, params):
     bst = xgb.train(params, dtrain)
     preds = bst.predict(dtest)
     best_preds = np.asarray([np.argmax(line) for line in preds])
@@ -66,15 +62,15 @@ def train_model(params):
     recall = recall_score(labels_test, best_preds, average='macro')
     precision = precision_score(labels_test, best_preds, average='macro')
 
-    print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
-    print("precision: %s" % precision)
-    print("recall: %s" % recall)
-    print("accuracy: %s" % accuracy)
+    # print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
+    # print("precision: %s" % precision)
+    # print("recall: %s" % recall)
+    # print("accuracy: %s" % accuracy)
 
     return [precision, recall, accuracy]
 
 
-def parameter_sweep():
+def parameter_sweep(dtrain, dtest, labels_test):
     accuracy = 0;
     recall = 0;
     precision = 0;
@@ -101,7 +97,7 @@ def parameter_sweep():
             'num_class': 2
         }
 
-        [precision_new, recall_new, accuracy_new] = train_model(params)
+        [precision_new, recall_new, accuracy_new] = train_model(dtrain, dtest, labels_test, params)
 
         if precision_new > precision:
             precision = precision_new
@@ -134,14 +130,19 @@ def parameter_sweep():
 #
 # [accuracy, precision, recall] = train_model(params)
 
-[accuracy, precision, recall, accuracy_params, recall_params, precision_params] = parameter_sweep()
+data = get_data()
+labels = get_labels()
 
-# print("best accuracy: %s" % accuracy)
-# print("with params: %s" % accuracy_params)
-# print("")
-# print("best precision: %s" % precision)
-# print("with params: %s" %  precision_params)
-# print("")
-# print("best recall: %s" % recall)
-# print("with params: %s" % recall_params)
+[dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
+
+[accuracy, precision, recall, accuracy_params, recall_params, precision_params] = parameter_sweep(dtrain, dtest, labels_test)
+
+print("best accuracy: %s" % accuracy)
+print("with params: %s" % accuracy_params)
+print("")
+print("best precision: %s" % precision)
+print("with params: %s" %  precision_params)
+print("")
+print("best recall: %s" % recall)
+print("with params: %s" % recall_params)
 
