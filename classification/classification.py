@@ -86,46 +86,45 @@ def parameter_sweep(dtrain, dtest, labels_test):
     max_depth_poss = np.arange(1, 10, 1)
     min_child_weight_poss = np.arange(1, 6, 1)
     gamma_poss = np.arange(0.1, 1, 0.1)
-    eta_poss = np.arange(0.1, 0.1, 2)
+    eta_poss = np.arange(0.1, 2, 0.1)
 
     for max_depth in max_depth_poss:
-        # for min_child_weight in min_child_weight_poss:
-        #     for gamma in gamma_poss:
-        #         for eta in eta_poss:
+        print("max_depth: %s" % max_depth)
+        for min_child_weight in min_child_weight_poss:
+            for gamma in gamma_poss:
+                for eta in eta_poss:
 
+                    params = {
+                        'max_depth': max_depth,  # the maximum depth of each tree,
+                        'min_child_weight': min_child_weight,
+                        'gamma': gamma,
+                        'subsample': 0.8,
+                        'colsample_bytree': 0.8,
+                        'scale_pos_weight': 1,
+                        'eta': eta,  # the training step for each iteration
+                        'silent': 1,  # logging mode - quiet
+                        # 'objective': 'binary:logistic'
+                        'objective': 'multi:softprob',
+                        'num_class': 2
+                    }
 
+                    [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
 
-        params = {
-            'max_depth': max_depth,  # the maximum depth of each tree,
-            'min_child_weight': 3,
-            'gamma': 2,
-            'subsample': 0.8,
-            'colsample_bytree': 0.8,
-            'scale_pos_weight': 1,
-            'eta': 1,  # the training step for each iteration
-            'silent': 1,  # logging mode - quiet
-            # 'objective': 'binary:logistic'
-            'objective': 'multi:softprob',
-            'num_class': 2
-        }
+                    if precision_new > precision:
+                        precision = precision_new
+                        precision_params = [max_depth, 0, 0, 0, 0]
 
-        [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
+                    if accuracy_new > accuracy:
+                        accuracy = accuracy_new
+                        accuracy_params = [max_depth, 0, 0, 0, 0]
 
-        if precision_new > precision:
-            precision = precision_new
-            precision_params = [max_depth, 0, 0, 0, 0]
+                    if recall_new > recall:
+                        recall = recall_new
+                        recall_params = [max_depth, 0, 0, 0, 0]
 
-        if accuracy_new > accuracy:
-            accuracy = accuracy_new
-            accuracy_params = [max_depth, 0, 0, 0, 0]
-
-        if recall_new > recall:
-            recall = recall_new
-            recall_params = [max_depth, 0, 0, 0, 0]
-
-        if auc_new > auc:
-            auc = auc_new
-            auc_params = [max_depth, 0, 0, 0, 0]
+                    if auc_new > auc:
+                        auc = auc_new
+                        auc_params = [max_depth, 0, 0, 0, 0]
 
     return[accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params]
 
