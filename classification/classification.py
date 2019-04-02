@@ -86,7 +86,7 @@ def parameter_sweep(dtrain, dtest, labels_test):
     max_depth_poss = np.arange(3, 10, 1)
     min_child_weight_poss = np.arange(1, 6, 1)
     gamma_poss = np.arange(0.1, 1, 0.1)
-    eta_poss = np.arange(0.4, 2, 0.1)
+    eta_poss = np.arange(0.1, 0.3, 0.1)
 
     for max_depth in max_depth_poss:
         print("max_depth: %s" % max_depth)

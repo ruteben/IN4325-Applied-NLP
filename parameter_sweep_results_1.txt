@@ -1,0 +1,16 @@
+eta: 0.4 - 2, subsample & colsample = 0.8
+
+params: [max_depth, min_child_weight, gamma, eta] 
+ 
+best accuracy: 0.7361821903787104 
+with params: [3, 3, 0.1, 0.6] 
+ 
+best precision: 0.8680235535074246 
+with params: [5, 2, 0.9, 0.4] 
+ 
+best recall: 0.5208746159350142 
+with params: [9, 1, 0.1, 1.6999999999999997] 
+ 
+best auc: 0.5208746159350142 
+with params: [9, 1, 0.1, 1.6999999999999997] 
+ 
