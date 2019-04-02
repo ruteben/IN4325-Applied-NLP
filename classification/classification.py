@@ -42,19 +42,15 @@ with open('../../NLP_data/preprocessed.csv') as file:
 
 data = np.array(data)
 
-print(data)
-
 truth = []
 with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
     for obj in json_file:
         if obj['truthClass'] == 'clickbait':
-            truth.append(0)
-        else:
             truth.append(1)
+        else:
+            truth.append(0)
 
 truth = np.array(truth)
-print(truth)
-# print(data)
 
 size_train = round(0.8*len(data))
 
@@ -69,12 +65,12 @@ dtest = xgb.DMatrix(data_test, label=labels_test)
 
 param = {
     'max_depth': 5,  # the maximum depth of each tree,
-    'min_child_weight': 1,
-    'gamma': 0,
+    'min_child_weight': 3,
+    'gamma': 2,
     'subsample': 0.8,
     'colsample_bytree': 0.8,
     'scale_pos_weight': 1,
-    'eta': 0.3,  # the training step for each iteration
+    'eta': 1,  # the training step for each iteration
     'silent': 1,  # logging mode - quiet
     # 'objective': 'binary:logistic'
     'objective': 'multi:softprob',
@@ -93,7 +89,49 @@ best_preds = np.asarray([np.argmax(line) for line in preds])
 
 
 print(best_preds)
+print(np.size(best_preds))
+print(np.count_nonzero(best_preds))
 print(precision_score(labels_test, best_preds, average='macro'))
 print(recall_score(labels_test, best_preds, average='macro'))
 print(accuracy_score(labels_test, best_preds))
 # print(roc_auc_score(labels_test, best_preds))
+
+
+def get_data():
+    with open('../../NLP_data/preprocessed.csv') as file:
+        datafile = csv.reader(file, delimiter=";")
+        data = []
+        i = 0
+        for row in datafile:
+            i = i + 1
+            if row and i > 1:  # I have the feeling it skips 2i every time here but I don't know why
+                row_no_id = row[1:]
+                row_int = []
+                for value in row_no_id:
+                    row_int.append(float(value))
+                data.append(row_int)
+
+    return np.array(data)
+
+
+def get_labels():
+    truth = []
+    with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
+        for obj in json_file:
+            if obj['truthClass'] == 'clickbait':
+                truth.append(1)
+            else:
+                truth.append(0)
+
+    return np.array(truth)
+
+def create_DMatrices(data, labels, test_size):
+
+
+def train_model(dtrain, dtest, params):
+
+
+def
+
+
+def parameter_sweep():
