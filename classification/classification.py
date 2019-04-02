@@ -83,10 +83,10 @@ def parameter_sweep(dtrain, dtest, labels_test):
     precision_params = [0, 0, 0, 0]
     auc_params = [0, 0, 0, 0]
 
-    max_depth_poss = np.arange(1, 10, 1)
+    max_depth_poss = np.arange(2, 10, 1)
     min_child_weight_poss = np.arange(1, 6, 1)
     gamma_poss = np.arange(0.1, 1, 0.1)
-    eta_poss = np.arange(0.1, 2, 0.1)
+    eta_poss = np.arange(0.6, 2, 0.1)
 
     for max_depth in max_depth_poss:
         print("max_depth: %s" % max_depth)
@@ -136,7 +136,7 @@ def parameter_sweep(dtrain, dtest, labels_test):
 #     'subsample': 0.8,
 #     'colsample_bytree': 0.8,
 #     'scale_pos_weight': 1,
-#     'eta': 1.6,  # the training step for each iteration
+#     'eta': 0.7,  # the training step for each iteration
 #     'silent': 1,  # logging mode - quiet
 #     # 'objective': 'binary:logistic'
 #     'objective': 'multi:softprob',
@@ -148,7 +148,7 @@ def parameter_sweep(dtrain, dtest, labels_test):
 #
 # [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
 #
-# [accuracy, precision, recall] = train_model(dtrain, dtest, labels_test, params)
+# [accuracy, precision, recall, auc] = train_model(dtrain, dtest, labels_test, params)
 
 data = get_data()
 labels = get_labels()
