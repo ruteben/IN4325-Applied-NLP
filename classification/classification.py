@@ -22,7 +22,7 @@ import csv
 # dtest = xgb.DMatrix(X_test, label=y_test)
 #
 #
-# print(y)
+# print(dtrain)
 
 
 
@@ -42,7 +42,7 @@ with open('../../NLP_data/preprocessed.csv') as file:
 
 data = np.array(data)
 
-print(data[0])
+print(data)
 
 truth = []
 with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
@@ -76,9 +76,9 @@ param = {
     'scale_pos_weight': 1,
     'eta': 0.3,  # the training step for each iteration
     'silent': 1,  # logging mode - quiet
-    'objective': 'binary:logistic'
-    # 'objective': 'multi:softprob',
-    # 'num_class': 3
+    # 'objective': 'binary:logistic'
+    'objective': 'multi:softprob',
+    'num_class': 2
 }
 
 bst = xgb.train(param, dtrain)
@@ -96,4 +96,4 @@ print(best_preds)
 print(precision_score(labels_test, best_preds, average='macro'))
 print(recall_score(labels_test, best_preds, average='macro'))
 print(accuracy_score(labels_test, best_preds))
-print(roc_auc_score(labels_test, best_preds))
+# print(roc_auc_score(labels_test, best_preds))
