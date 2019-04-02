@@ -112,19 +112,19 @@ def parameter_sweep(dtrain, dtest, labels_test):
 
                     if precision_new > precision:
                         precision = precision_new
-                        precision_params = [max_depth, 0, 0, 0, 0]
+                        precision_params = [max_depth, min_child_weight, gamma, eta]
 
                     if accuracy_new > accuracy:
                         accuracy = accuracy_new
-                        accuracy_params = [max_depth, 0, 0, 0, 0]
+                        accuracy_params = [max_depth, min_child_weight, gamma, eta]
 
                     if recall_new > recall:
                         recall = recall_new
-                        recall_params = [max_depth, 0, 0, 0, 0]
+                        recall_params = [max_depth, min_child_weight, gamma, eta]
 
                     if auc_new > auc:
                         auc = auc_new
-                        auc_params = [max_depth, 0, 0, 0, 0]
+                        auc_params = [max_depth, min_child_weight, gamma, eta]
 
     return[accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params]
 
