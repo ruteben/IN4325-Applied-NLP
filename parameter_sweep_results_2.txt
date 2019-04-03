@@ -1,0 +1,16 @@
+eta: 0.1-0.3 andere twee: 0.8
+
+params: [max_depth, min_child_weight, gamma, eta] 
+ 
+best accuracy: 0.7359263050153532 
+with params: [5, 2, 0.1, 0.2] 
+ 
+best precision: 0.8679293575633478 
+with params: [5, 2, 0.1, 0.2] 
+ 
+best recall: 0.5010665432046804 
+with params: [9, 3, 0.2, 0.2] 
+ 
+best auc: 0.5010665432046804 
+with params: [9, 3, 0.2, 0.2] 
+ 
