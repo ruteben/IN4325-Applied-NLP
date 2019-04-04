@@ -9,6 +9,7 @@ from sklearn.metrics import roc_auc_score
 import jsonlines
 import csv
 
+
 def get_data():
     with open('../../NLP_data/preprocessed.csv') as file:
         datafile = csv.reader(file, delimiter=";")
@@ -167,90 +168,93 @@ def cross_validation(data, labels, params, folds):
     return [precision, recall, accuracy, auc]
 
 
-# params = {
-#     'max_depth': 5,  # the maximum depth of each tree,
-#     'min_child_weight': 3,
-#     'gamma': 1,
-#     'subsample': 0.8,
-#     'colsample_bytree': 0.8,
-#     'scale_pos_weight': 1,
-#     'eta': 0.7,  # the training step for each iteration
-#     'silent': 1,  # logging mode - quiet
-#     # 'objective': 'binary:logistic'
-#     'objective': 'multi:softprob',
-#     'num_class': 2
-# }
-#
-# data = get_data()
-# print(data.shape[0])
-# labels = get_labels()
-#
-# [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
-#
-# [accuracy, precision, recall, auc] = train_model(dtrain, dtest, labels_test, params)
+def run_train_model():
+    params = {
+        'max_depth': 5,  # the maximum depth of each tree,
+        'min_child_weight': 2,
+        'gamma': 0.9,
+        'subsample': 0.8,
+        'colsample_bytree': 0.8,
+        'scale_pos_weight': 1,
+        'eta': 0.4,  # the training step for each iteration
+        'silent': 1,  # logging mode - quiet
+        # 'objective': 'binary:logistic'
+        'objective': 'multi:softprob',
+        'num_class': 2
+    }
+
+    data = get_data()
+    print(data.shape[0])
+    labels = get_labels()
+
+    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
+
+    [accuracy, precision, recall, auc] = train_model(dtrain, dtest, labels_test, params)
+
+    print("precision: %s" % precision)
+    print("recall: %s" % recall)
+    print("accuracy: %s" % accuracy)
+    print("auc: %s" % auc)
 
 
+def run_parameter_sweep():
+    data = get_data()
+    labels = get_labels()
+
+    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
+
+    [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep(
+        dtrain, dtest, labels_test)
+
+    print("")
+    print("best accuracy: %s" % accuracy)
+    print("with params: %s" % accuracy_params)
+    print("")
+    print("best precision: %s" % precision)
+    print("with params: %s" % precision_params)
+    print("")
+    print("best recall: %s" % recall)
+    print("with params: %s" % recall_params)
+    print("")
+    print("best auc: %s" % auc)
+    print("with params: %s" % auc_params)
+
+    output_file = open('../parameter_sweep_results.txt', 'w')
+
+    output_file.write("params: [max_depth, min_child_weight, gamma, eta] \n \n")
+    output_file.write("best accuracy: %s \n" % accuracy)
+    output_file.write("with params: %s \n \n" % accuracy_params)
+    output_file.write("best precision: %s \n" % precision)
+    output_file.write("with params: %s \n \n" % precision_params)
+    output_file.write("best recall: %s \n" % recall)
+    output_file.write("with params: %s \n \n" % recall_params)
+    output_file.write("best auc: %s \n" % auc)
+    output_file.write("with params: %s \n \n" % auc_params)
+
+    output_file.close()
 
 
+def run_cross_validation():
+    params = {
+        'max_depth': 5,  # the maximum depth of each tree,
+        'min_child_weight': 2,
+        'gamma': 0.9,
+        'subsample': 0.8,
+        'colsample_bytree': 0.8,
+        'scale_pos_weight': 1,
+        'eta': 0.4,  # the training step for each iteration
+        'silent': 1,  # logging mode - quiet
+        # 'objective': 'binary:logistic'
+        'objective': 'multi:softprob',
+        'num_class': 2
+    }
 
+    data = get_data()
+    labels = get_labels()
 
-# data = get_data()
-# labels = get_labels()
-#
-# [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
-#
-# [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep(dtrain, dtest, labels_test)
-#
-# print("")
-# print("best accuracy: %s" % accuracy)
-# print("with params: %s" % accuracy_params)
-# print("")
-# print("best precision: %s" % precision)
-# print("with params: %s" %  precision_params)
-# print("")
-# print("best recall: %s" % recall)
-# print("with params: %s" % recall_params)
-# print("")
-# print("best auc: %s" % auc)
-# print("with params: %s" % auc_params)
-#
-# output_file = open('../parameter_sweep_results.txt', 'w')
-#
-# output_file.write("params: [max_depth, min_child_weight, gamma, eta] \n \n")
-# output_file.write("best accuracy: %s \n" % accuracy)
-# output_file.write("with params: %s \n \n" % accuracy_params)
-# output_file.write("best precision: %s \n" % precision)
-# output_file.write("with params: %s \n \n" %  precision_params)
-# output_file.write("best recall: %s \n" % recall)
-# output_file.write("with params: %s \n \n" % recall_params)
-# output_file.write("best auc: %s \n" % auc)
-# output_file.write("with params: %s \n \n" % auc_params)
-#
-# output_file.close()
+    [precision, recall, accuracy, auc] = cross_validation(data, labels, params, 5)
 
-
-
-
-params = {
-    'max_depth': 5,  # the maximum depth of each tree,
-    'min_child_weight': 3,
-    'gamma': 1,
-    'subsample': 0.8,
-    'colsample_bytree': 0.8,
-    'scale_pos_weight': 1,
-    'eta': 0.7,  # the training step for each iteration
-    'silent': 1,  # logging mode - quiet
-    # 'objective': 'binary:logistic'
-    'objective': 'multi:softprob',
-    'num_class': 2
-}
-
-data = get_data()
-labels = get_labels()
-
-[precision, recall, accuracy, auc] = cross_validation(data, labels, params, 10)
-
-print("precision: %s" % precision)
-print("recall: %s" % recall)
-print("accuracy: %s" % accuracy)
-print("auc: %s" % auc)
+    print("precision: %s" % precision)
+    print("recall: %s" % recall)
+    print("accuracy: %s" % accuracy)
+    print("auc: %s" % auc)
