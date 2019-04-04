@@ -131,6 +131,11 @@ def parameter_sweep(dtrain, dtest, labels_test):
 
 def cross_validation(data, labels, params, folds):
     size_test_set = round(len(data)/folds)
+    accuracy = 0
+    precision = 0
+    recall = 0
+    auc = 0
+
     for fold in range(0, folds):
         size_first_train_part = fold*size_test_set
 
@@ -139,15 +144,27 @@ def cross_validation(data, labels, params, folds):
         last_train_part = data[size_first_train_part + size_test_set:]
         train_set = np.append(first_train_part, last_train_part, axis=0)
 
-        
+        first_labels_part = labels[:size_first_train_part]
+        labels_test = labels[size_first_train_part: size_first_train_part + size_test_set]
+        last_labels_part = labels[size_first_train_part + size_test_set:]
+        labels_train = np.append(first_labels_part, last_labels_part, axis=0)
 
-        dtrain = xgb.DMatrix(data_train, label=labels_train)
-        dtest = xgb.DMatrix(data_test, label=labels_test)
+        dtrain = xgb.DMatrix(train_set, label=labels_train)
+        dtest = xgb.DMatrix(test_set, label=labels_test)
 
-        print(len(test_set))
-        print(len(train_set))
+        [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
 
+        accuracy += accuracy_new
+        precision += precision_new
+        recall += recall_new
+        auc += auc_new
 
+    accuracy = accuracy/folds
+    precision = precision/folds
+    recall = recall/folds
+    auc = auc/folds
+
+    return [precision, recall, accuracy, auc]
 
 
 # params = {
@@ -231,4 +248,9 @@ params = {
 data = get_data()
 labels = get_labels()
 
-cross_validation(data, labels, params, 10)
+[precision, recall, accuracy, auc] = cross_validation(data, labels, params, 10)
+
+print("precision: %s" % precision)
+print("recall: %s" % recall)
+print("accuracy: %s" % accuracy)
+print("auc: %s" % auc)
