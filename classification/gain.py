@@ -11,6 +11,18 @@ def get_column(data, column_index):
         column.append(data[row][column_index])
     return column
 
+a = get_column(data, 1)
+print(a)
+print(sum(a))
+
+b = get_column(data, 2)
+print(b)
+print(sum(b))
+
+c = get_column(data, 3)
+print(c)
+print(sum(c))
+
 
 def calc_gains(data):
     gains = []
@@ -22,5 +34,3 @@ def calc_gains(data):
 
 
 print(calc_gains(data))
-
-

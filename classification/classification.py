@@ -72,8 +72,11 @@ def train_model(dtrain, dtest, labels_test, params):
 
     return [precision, recall, accuracy, auc]
 
+# # train model parameter sweep
+# def parameter_sweep(dtrain, dtest, labels_test):
 
-def parameter_sweep(dtrain, dtest, labels_test):
+# cross validation parameter sweep
+def parameter_sweep(data, labels):
     accuracy = 0;
     recall = 0;
     precision = 0;
@@ -108,8 +111,11 @@ def parameter_sweep(dtrain, dtest, labels_test):
                         'objective': 'multi:softprob',
                         'num_class': 2
                     }
+                    # # train model parameter sweep
+                    # [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
 
-                    [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
+                    # cross validation parameter sweep
+                    [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
 
                     if precision_new > precision:
                         precision = precision_new
@@ -203,8 +209,13 @@ def run_parameter_sweep():
 
     [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
 
+    # cross validation parameter sweep
     [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep(
-        dtrain, dtest, labels_test)
+        data, labels)
+
+    # # train model parameter sweep
+    # [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep(
+    #     dtrain, dtest, labels_test)
 
     print("")
     print("best accuracy: %s" % accuracy)
@@ -258,3 +269,6 @@ def run_cross_validation():
     print("recall: %s" % recall)
     print("accuracy: %s" % accuracy)
     print("auc: %s" % auc)
+
+
+run_parameter_sweep()
