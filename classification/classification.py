@@ -130,12 +130,24 @@ def parameter_sweep(dtrain, dtest, labels_test):
 
 
 def cross_validation(data, labels, params, folds):
-    size_test_set = round(data.shape[0]/folds)
+    size_test_set = round(len(data)/folds)
     for fold in range(0, folds):
         size_first_train_part = fold*size_test_set
+
         first_train_part = data[:size_first_train_part]
-        test_part = data[size_first_train_part: size_first_train_part + size_test_set]
+        test_set = data[size_first_train_part: size_first_train_part + size_test_set]
         last_train_part = data[size_first_train_part + size_test_set:]
+        train_set = np.append(first_train_part, last_train_part, axis=0)
+
+        
+
+        dtrain = xgb.DMatrix(data_train, label=labels_train)
+        dtest = xgb.DMatrix(data_test, label=labels_test)
+
+        print(len(test_set))
+        print(len(train_set))
+
+
 
 
 # params = {
