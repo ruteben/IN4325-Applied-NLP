@@ -3,8 +3,24 @@ import classification
 
 data = classification.get_data()
 
-arr = [1, 2, 5, 2, 5, 0, 0, 10, 5, 7, 2]
-entr = entropy(arr)
-print(entr)
+
+def get_column(data, column_index):
+    column = []
+    length_data = len(data)
+    for row in range(0, length_data):
+        column.append(data[row][column_index])
+    return column
+
+
+def calc_gains(data):
+    gains = []
+    for column_index in range(0, data.shape[1]):
+        column = get_column(data, column_index)
+        gain = entropy(column)
+        gains.append(gain)
+    return gains
+
+
+print(calc_gains(data))
 
 
