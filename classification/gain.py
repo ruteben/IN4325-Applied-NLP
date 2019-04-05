@@ -1,10 +1,10 @@
 from scipy.stats import entropy
 import classification
-from scipy.stats import entropy
+from info_gain import info_gain
 import numpy as np
 
 data = classification.get_data()
-
+labels = classification.get_labels()
 
 def get_column(data, column_index):
     column = []
@@ -16,9 +16,10 @@ def get_column(data, column_index):
 
 def calc_gains(data):
     gains = []
-    for column_index in range(0, data.shape[1]):
+    for column_index in range(0, 1):
+        print(column_index)
         column = np.array(get_column(data, column_index))
-        gain = entropy(column)
+        gain = info_gain.info_gain(labels, column)
         gains.append(gain)
     return gains
 
