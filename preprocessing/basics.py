@@ -99,7 +99,7 @@ def len_characters(content):
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: number of characters in content, or -1 if no available content
-    :rtype: int
+    :rtype: float
     """
     if not content:
         return -1
@@ -108,9 +108,9 @@ def len_characters(content):
         cumulative = 0
         for element in content:
             cumulative += len(element)
-        return int(cumulative / len(content))
+        return cumulative / len(content)
 
-    return len(content)
+    return float(len(content))
 
 
 # Assumption: Return the total number of words (not number of unique words)
@@ -121,7 +121,7 @@ def len_words(content):
     :param content: post_title, article_title, article_description, article_keywords, article_paragraphs or article_captions
     :type content: str or list[str]
     :return: number of words in content, or -1 if no available content
-    :rtype: int
+    :rtype: float
     """
     if not content:
         return -1
@@ -130,9 +130,9 @@ def len_words(content):
         cumulative = 0
         for element in content:
             cumulative += len(element.split())
-        return int(cumulative / len(content))
+        return cumulative / len(content)
 
-    return len(content.split())
+    return float(len(content.split()))
 
 
 # Assumption: We remove punctuation, numbers and convert all letters to lowercase for easy comparison between words
