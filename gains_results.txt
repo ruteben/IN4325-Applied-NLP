@@ -1,1 +1,4 @@
-feature 0, gain 0.01097
+feature 3, gain 0.02214 
+feature 6, gain 0.01576 
+feature 5, gain 0.01540 
+feature 4, gain 0.00484 
