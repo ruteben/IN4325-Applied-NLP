@@ -11,14 +11,17 @@ import csv
 
 
 def get_best_features(data, top):
-    array_best_features = [26, 23, 28, 19, 21, 17, 60, 29, 27, 25]
+    # array_best_features = [26, 23, 28, 19, 21, 17, 60, 29, 27, 25]
+    array_best_features = [26, 23, 28, 19, 21]
     pruned_data = []
-    for object in range(0, len(data)):
+    for obj in range(0, len(data)):
         new_object = []
         for feature in array_best_features:
-            new_object.append(data[object][feature])
+            new_object.append(data[obj][feature])
         pruned_data.append(new_object)
-    return np.array(pruned_data)
+
+    pruned_data = np.array(pruned_data)
+    return pruned_data
 
 
 def get_data():
@@ -35,26 +38,35 @@ def get_data():
                     row_int.append(float(value))
                 data.append(row_int)
 
-    data_new = np.array(data)
     data_pruned = get_best_features(data, 10)
-    # print(data_pruned)
     return data_pruned
 
 
 def get_labels():
     truth = []
-    with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
-        for obj in json_file:
-            if obj['truthClass'] == 'clickbait':
-                truth.append(1)
-            else:
-                truth.append(0)
-
+    with open('../../NLP_data/preprocessed.csv') as data_file:
+        with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
+            for data_obj in data_file:
+                print(data_obj)
+                for obj in json_file:
+                    if data_obj[0] == obj['id']:
+                        if obj['truthClass'] == 'clickbait':
+                            truth.append(1)
+                            break
+                        else:
+                            truth.append(0)
+                            break
+                    else:
+                        print("WARNING: LABEL NOT FOUND")
+    print("created labels")
+    truth = np.array(truth)
+    np.save('labels.npy', truth)
     return np.array(truth)
 
 
 def create_DMatrices(data, labels, test_size):
     size_train = round((1-test_size) * len(data))
+    test_size = round(test_size*len(data))
 
     data_train = data[:size_train]
     data_test = data[size_train:]
@@ -76,11 +88,13 @@ def train_model(dtrain, dtest, labels_test, params):
 
     bst = xgb.train(params, dtrain)
     best_preds = bst.predict(dtest)
+    print(best_preds)
 
     accuracy = accuracy_score(labels_test, best_preds)
     recall = recall_score(labels_test, best_preds)
     precision = precision_score(labels_test, best_preds)
     auc = roc_auc_score(labels_test, best_preds)
+    # auc = 0
 
     # print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
     # print("precision: %s" % precision)
@@ -264,11 +278,11 @@ def run_train_model(data, labels):
     params = {
         'max_depth': 5,  # the maximum depth of each tree,
         'min_child_weight': 5,
-        'gamma': 0.8,
+        'gamma': 0.6,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 0.9,  # the training step for each iteration
+        'eta': 1.875,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         # 'objective': 'binary:hinge'
         'objective': 'multi:softmax',
@@ -366,7 +380,7 @@ def run_parameter_sweep_cross_validation(data, labels):
 
 def run_cross_validation(data, labels):
     params = {
-        'max_depth': 2,  # the maximum depth of each tree,
+        'max_depth': 5,  # the maximum depth of each tree,
         'min_child_weight': 4,
         'gamma': 0.4,
         'subsample': 0.8,
@@ -387,7 +401,7 @@ def run_cross_validation(data, labels):
     print("auc: %s" % auc)
 
 
-# data = get_data()
-# labels = get_labels()
-#
-# run_parameter_sweep(data, labels)
+data = get_data()
+labels = get_labels()
+
+run_train_model(data, labels)
