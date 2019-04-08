@@ -134,7 +134,7 @@ def parameter_sweep(dtrain, dtest, labels_test):
                         auc = auc_new
                         auc_params = [max_depth, min_child_weight, gamma, eta]
 
-                    avg_new = precision_new + accuracy_new + recall_new
+                    avg_new = precision_new + accuracy_new + recall_new + auc_new
                     if avg_new > avg:
                         avg = avg_new
                         avg_params = [max_depth, min_child_weight, gamma, eta]
@@ -176,9 +176,9 @@ def parameter_sweep_cross_validation(data, labels):
                         'scale_pos_weight': 1,
                         'eta': eta,  # the training step for each iteration
                         'silent': 1,  # logging mode - quiet
-                        'objective': 'binary:hinge'
-                        # 'objective': 'multi:softprob',
-                        # 'num_class': 2
+                        # 'objective': 'binary:hinge'
+                        'objective': 'multi:softmax',
+                        'num_class': 2
                     }
 
                     [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
@@ -256,9 +256,9 @@ def run_train_model():
         'scale_pos_weight': 1,
         'eta': 0.4,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
-        'objective': 'binary:hinge'
-        # 'objective': 'multi:softprob',
-        # 'num_class': 2
+        # 'objective': 'binary:hinge'
+        'objective': 'multi:softmax',
+        'num_class': 2
     }
 
     data = get_data()
@@ -368,7 +368,7 @@ def run_cross_validation():
         'eta': 0.4,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         # 'objective': 'binary:logistic'
-        'objective': 'multi:softprob',
+        'objective': 'multi:softmax',
         'num_class': 2
     }
 
