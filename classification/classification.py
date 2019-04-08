@@ -55,14 +55,18 @@ def create_DMatrices(data, labels, test_size):
 
 
 def train_model(dtrain, dtest, labels_test, params):
+
+    # bst = xgb.train(params, dtrain)
+    # preds = bst.predict(dtest)
+    # best_preds = np.asarray([np.argmax(line) for line in preds])
+
     bst = xgb.train(params, dtrain)
-    preds = bst.predict(dtest)
-    best_preds = np.asarray([np.argmax(line) for line in preds])
+    best_preds = bst.predict(dtest)
 
     accuracy = accuracy_score(labels_test, best_preds)
-    recall = recall_score(labels_test, best_preds, average='macro')
-    precision = precision_score(labels_test, best_preds, average='macro')
-    auc = roc_auc_score(labels_test, best_preds, average="macro")
+    recall = recall_score(labels_test, best_preds)
+    precision = precision_score(labels_test, best_preds)
+    auc = roc_auc_score(labels_test, best_preds)
 
     # print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
     # print("precision: %s" % precision)
@@ -79,16 +83,18 @@ def parameter_sweep(dtrain, dtest, labels_test):
     recall = 0
     precision = 0
     auc = 0
+    avg = 0
 
     accuracy_params = [0, 0, 0, 0]
     recall_params = [0, 0, 0, 0]
     precision_params = [0, 0, 0, 0]
     auc_params = [0, 0, 0, 0]
+    avg_params = [0, 0, 0, 0]
 
-    max_depth_poss = np.arange(3, 10, 1)
+    max_depth_poss = np.arange(3, 8, 1)
     min_child_weight_poss = np.arange(1, 6, 1)
     gamma_poss = np.arange(0.1, 1, 0.1)
-    eta_poss = np.arange(0.1, 0.3, 0.1)
+    eta_poss = np.arange(0.1, 2, 0.1)
 
     for max_depth in max_depth_poss:
         print("max_depth: %s" % max_depth)
@@ -105,8 +111,8 @@ def parameter_sweep(dtrain, dtest, labels_test):
                         'scale_pos_weight': 1,
                         'eta': eta,  # the training step for each iteration
                         'silent': 1,  # logging mode - quiet
-                        # 'objective': 'binary:logistic'
-                        'objective': 'multi:softprob',
+                        # 'objective': 'binary:hinge'
+                        'objective': 'multi:softmax',
                         'num_class': 2
                     }
 
@@ -128,7 +134,12 @@ def parameter_sweep(dtrain, dtest, labels_test):
                         auc = auc_new
                         auc_params = [max_depth, min_child_weight, gamma, eta]
 
-    return[accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params]
+                    avg_new = precision_new + accuracy_new + recall_new
+                    if avg_new > avg:
+                        avg = avg_new
+                        avg_params = [max_depth, min_child_weight, gamma, eta]
+
+    return[accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params, avg_params]
 
 
 # cross validation parameter sweep
@@ -137,16 +148,18 @@ def parameter_sweep_cross_validation(data, labels):
     recall = 0
     precision = 0
     auc = 0
+    avg = 0
 
     accuracy_params = [0, 0, 0, 0]
     recall_params = [0, 0, 0, 0]
     precision_params = [0, 0, 0, 0]
     auc_params = [0, 0, 0, 0]
+    avg_params = [0, 0, 0, 0]
 
-    max_depth_poss = np.arange(3, 10, 1)
+    max_depth_poss = np.arange(3, 8, 1)
     min_child_weight_poss = np.arange(1, 6, 1)
     gamma_poss = np.arange(0.1, 1, 0.1)
-    eta_poss = np.arange(0.1, 0.3, 0.1)
+    eta_poss = np.arange(0.3, 2, 0.1)
 
     for max_depth in max_depth_poss:
         print("max_depth: %s" % max_depth)
@@ -163,9 +176,9 @@ def parameter_sweep_cross_validation(data, labels):
                         'scale_pos_weight': 1,
                         'eta': eta,  # the training step for each iteration
                         'silent': 1,  # logging mode - quiet
-                        # 'objective': 'binary:logistic'
-                        'objective': 'multi:softprob',
-                        'num_class': 2
+                        'objective': 'binary:hinge'
+                        # 'objective': 'multi:softprob',
+                        # 'num_class': 2
                     }
 
                     [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
@@ -186,7 +199,13 @@ def parameter_sweep_cross_validation(data, labels):
                         auc = auc_new
                         auc_params = [max_depth, min_child_weight, gamma, eta]
 
-    return[accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params]
+                    avg_new = precision_new + accuracy_new + recall_new
+
+                    if avg_new > avg:
+                        avg = avg_new
+                        avg_params = [max_depth, min_child_weight, gamma, eta]
+
+    return [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params, avg_params]
 
 
 def cross_validation(data, labels, params, folds):
@@ -237,9 +256,9 @@ def run_train_model():
         'scale_pos_weight': 1,
         'eta': 0.4,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
-        # 'objective': 'binary:logistic'
-        'objective': 'multi:softprob',
-        'num_class': 2
+        'objective': 'binary:hinge'
+        # 'objective': 'multi:softprob',
+        # 'num_class': 2
     }
 
     data = get_data()
@@ -263,7 +282,7 @@ def run_parameter_sweep():
     [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
 
     # train model parameter sweep
-    [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep(
+    [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params, avg_params] = parameter_sweep(
         dtrain, dtest, labels_test)
 
     print("")
@@ -278,6 +297,8 @@ def run_parameter_sweep():
     print("")
     print("best auc: %s" % auc)
     print("with params: %s" % auc_params)
+    print("")
+    print("best overall params: %s" % avg_params)
 
     output_file = open('../parameter_sweep_results.txt', 'w')
 
@@ -299,7 +320,7 @@ def run_parameter_sweep_cross_validation():
     labels = get_labels()
 
     # cross validation parameter sweep
-    [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep_cross_validation(
+    [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params, avg_params] = parameter_sweep_cross_validation(
         data, labels)
 
     # # train model parameter sweep
@@ -318,6 +339,8 @@ def run_parameter_sweep_cross_validation():
     print("")
     print("best auc: %s" % auc)
     print("with params: %s" % auc_params)
+    print("")
+    print("best overall params: %s" % avg_params)
 
     output_file = open('../parameter_sweep_results.txt', 'w')
 

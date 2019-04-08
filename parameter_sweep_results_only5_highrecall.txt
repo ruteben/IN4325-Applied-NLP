@@ -1,0 +1,14 @@
+params: [max_depth, min_child_weight, gamma, eta] 
+ 
+best accuracy: 0.7361821903787104 
+with params: [5, 2, 0.6, 0.4] 
+ 
+best precision: 1.0 
+with params: [5, 1, 0.1, 0.30000000000000004] 
+ 
+best recall: 0.9109390125847048 
+with params: [5, 1, 0.8, 1.9000000000000001] 
+ 
+best auc: 0.5116644639925922 
+with params: [5, 4, 0.4, 1.9000000000000001] 
+ 
