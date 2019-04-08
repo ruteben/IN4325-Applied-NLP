@@ -170,10 +170,10 @@ def parameter_sweep_cross_validation(data, labels):
     auc_params = [0, 0, 0, 0]
     avg_params = [0, 0, 0, 0]
 
-    max_depth_poss = np.arange(3, 8, 1)
+    max_depth_poss = np.arange(3, 9, 1)
     min_child_weight_poss = np.arange(1, 6, 1)
     gamma_poss = np.arange(0.1, 1, 0.1)
-    eta_poss = np.arange(0.3, 2, 0.1)
+    eta_poss = np.arange(0.1, 2, 0.1)
 
     for max_depth in max_depth_poss:
         print("max_depth: %s" % max_depth)
@@ -323,9 +323,6 @@ def run_parameter_sweep(data, labels):
 
 
 def run_parameter_sweep_cross_validation(data, labels):
-    data = get_data()
-    labels = get_labels()
-
     # cross validation parameter sweep
     [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params, avg_params] = parameter_sweep_cross_validation(
         data, labels)
@@ -390,4 +387,4 @@ def run_cross_validation(data, labels):
 data = get_data()
 labels = get_labels()
 
-run_train_model(data, labels)
+run_parameter_sweep_cross_validation(data, labels)
