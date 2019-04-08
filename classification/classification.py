@@ -73,10 +73,7 @@ def train_model(dtrain, dtest, labels_test, params):
     return [precision, recall, accuracy, auc]
 
 # # train model parameter sweep
-# def parameter_sweep(dtrain, dtest, labels_test):
-
-# cross validation parameter sweep
-def parameter_sweep(data, labels):
+def parameter_sweep(dtrain, dtest, labels_test):
     accuracy = 0;
     recall = 0;
     precision = 0;
@@ -111,10 +108,65 @@ def parameter_sweep(data, labels):
                         'objective': 'multi:softprob',
                         'num_class': 2
                     }
-                    # # train model parameter sweep
-                    # [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
 
-                    # cross validation parameter sweep
+                    [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
+
+                    if precision_new > precision:
+                        precision = precision_new
+                        precision_params = [max_depth, min_child_weight, gamma, eta]
+
+                    if accuracy_new > accuracy:
+                        accuracy = accuracy_new
+                        accuracy_params = [max_depth, min_child_weight, gamma, eta]
+
+                    if recall_new > recall:
+                        recall = recall_new
+                        recall_params = [max_depth, min_child_weight, gamma, eta]
+
+                    if auc_new > auc:
+                        auc = auc_new
+                        auc_params = [max_depth, min_child_weight, gamma, eta]
+
+    return[accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params]
+
+
+# cross validation parameter sweep
+def parameter_sweep_cross_validation(data, labels):
+    accuracy = 0;
+    recall = 0;
+    precision = 0;
+    auc = 0;
+
+    accuracy_params = [0, 0, 0, 0]
+    recall_params = [0, 0, 0, 0]
+    precision_params = [0, 0, 0, 0]
+    auc_params = [0, 0, 0, 0]
+
+    max_depth_poss = np.arange(3, 10, 1)
+    min_child_weight_poss = np.arange(1, 6, 1)
+    gamma_poss = np.arange(0.1, 1, 0.1)
+    eta_poss = np.arange(0.1, 0.3, 0.1)
+
+    for max_depth in max_depth_poss:
+        print("max_depth: %s" % max_depth)
+        for min_child_weight in min_child_weight_poss:
+            for gamma in gamma_poss:
+                for eta in eta_poss:
+
+                    params = {
+                        'max_depth': max_depth,  # the maximum depth of each tree,
+                        'min_child_weight': min_child_weight,
+                        'gamma': gamma,
+                        'subsample': 0.8,
+                        'colsample_bytree': 0.8,
+                        'scale_pos_weight': 1,
+                        'eta': eta,  # the training step for each iteration
+                        'silent': 1,  # logging mode - quiet
+                        # 'objective': 'binary:logistic'
+                        'objective': 'multi:softprob',
+                        'num_class': 2
+                    }
+
                     [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
 
                     if precision_new > precision:
@@ -245,6 +297,48 @@ def run_parameter_sweep():
     output_file.close()
 
 
+def run_parameter_sweep_cross_validation():
+    data = get_data()
+    labels = get_labels()
+
+    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
+
+    # cross validation parameter sweep
+    [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep_cross_validation(
+        data, labels)
+
+    # # train model parameter sweep
+    # [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep(
+    #     dtrain, dtest, labels_test)
+
+    print("")
+    print("best accuracy: %s" % accuracy)
+    print("with params: %s" % accuracy_params)
+    print("")
+    print("best precision: %s" % precision)
+    print("with params: %s" % precision_params)
+    print("")
+    print("best recall: %s" % recall)
+    print("with params: %s" % recall_params)
+    print("")
+    print("best auc: %s" % auc)
+    print("with params: %s" % auc_params)
+
+    output_file = open('../parameter_sweep_results.txt', 'w')
+
+    output_file.write("params: [max_depth, min_child_weight, gamma, eta] \n \n")
+    output_file.write("best accuracy: %s \n" % accuracy)
+    output_file.write("with params: %s \n \n" % accuracy_params)
+    output_file.write("best precision: %s \n" % precision)
+    output_file.write("with params: %s \n \n" % precision_params)
+    output_file.write("best recall: %s \n" % recall)
+    output_file.write("with params: %s \n \n" % recall_params)
+    output_file.write("best auc: %s \n" % auc)
+    output_file.write("with params: %s \n \n" % auc_params)
+
+    output_file.close()
+
+
 def run_cross_validation():
     params = {
         'max_depth': 5,  # the maximum depth of each tree,
@@ -271,4 +365,4 @@ def run_cross_validation():
     print("auc: %s" % auc)
 
 
-run_parameter_sweep()
+run_parameter_sweep_cross_validation()
