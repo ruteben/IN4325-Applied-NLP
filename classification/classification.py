@@ -16,16 +16,33 @@ def get_data():
         data = []
         i = 0
         for row in datafile:
-            i = i + 1
-            if row and i > 1:  # I have the feeling it skips 2i every time here but I don't know why
+            i += 1      # seems like it adds i twice?
+            if row and i > 1:
                 row_no_id = row[1:]
                 row_int = []
                 for value in row_no_id:
                     row_int.append(float(value))
                 data.append(row_int)
 
+    data_new = np.array(data)
+    print(data_new)
+
+    # pruned_data = get_best_features(data, 10)
+    # print(pruned_data)
+    # print(np.array([data][0]))
+
     return np.array(data)
 
+
+def get_best_features(data, top):
+    array_best_features = [26, 23, 28, 19, 21, 17, 60, 29, 27, 25]
+    pruned_data = []
+    for object in range(0, len(data)):
+        new_object = []
+        for feature in array_best_features:
+            new_object.append(data[object][feature])
+        pruned_data.append(new_object)
+    return pruned_data
 
 def get_labels():
     truth = []
@@ -249,12 +266,12 @@ def cross_validation(data, labels, params, folds):
 def run_train_model():
     params = {
         'max_depth': 5,  # the maximum depth of each tree,
-        'min_child_weight': 1,
+        'min_child_weight': 5,
         'gamma': 0.8,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 1.9,  # the training step for each iteration
+        'eta': 1.5,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         # 'objective': 'binary:hinge'
         'objective': 'multi:softmax',
@@ -262,7 +279,6 @@ def run_train_model():
     }
 
     data = get_data()
-    print(data.shape[0])
     labels = get_labels()
 
     [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
