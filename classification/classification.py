@@ -248,7 +248,7 @@ def run_train_model():
 
     [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
 
-    [accuracy, precision, recall, auc] = train_model(dtrain, dtest, labels_test, params)
+    [precision, recall, accuracy, auc] = train_model(dtrain, dtest, labels_test, params)
 
     print("precision: %s" % precision)
     print("recall: %s" % recall)
@@ -297,8 +297,6 @@ def run_parameter_sweep():
 def run_parameter_sweep_cross_validation():
     data = get_data()
     labels = get_labels()
-
-    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
 
     # cross validation parameter sweep
     [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params] = parameter_sweep_cross_validation(
