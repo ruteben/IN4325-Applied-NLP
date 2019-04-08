@@ -134,7 +134,7 @@ def parameter_sweep(dtrain, dtest, labels_test):
                         auc = auc_new
                         auc_params = [max_depth, min_child_weight, gamma, eta]
 
-                    avg_new = precision_new + accuracy_new + recall_new + auc_new
+                    avg_new = accuracy_new + recall_new
                     if avg_new > avg:
                         avg = avg_new
                         avg_params = [max_depth, min_child_weight, gamma, eta]
@@ -199,7 +199,7 @@ def parameter_sweep_cross_validation(data, labels):
                         auc = auc_new
                         auc_params = [max_depth, min_child_weight, gamma, eta]
 
-                    avg_new = precision_new + accuracy_new + recall_new
+                    avg_new = accuracy_new + recall_new
 
                     if avg_new > avg:
                         avg = avg_new
@@ -249,12 +249,12 @@ def cross_validation(data, labels, params, folds):
 def run_train_model():
     params = {
         'max_depth': 5,  # the maximum depth of each tree,
-        'min_child_weight': 2,
-        'gamma': 0.9,
+        'min_child_weight': 1,
+        'gamma': 0.8,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 0.4,  # the training step for each iteration
+        'eta': 1.9,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         # 'objective': 'binary:hinge'
         'objective': 'multi:softmax',
@@ -360,12 +360,12 @@ def run_parameter_sweep_cross_validation():
 def run_cross_validation():
     params = {
         'max_depth': 5,  # the maximum depth of each tree,
-        'min_child_weight': 2,
-        'gamma': 0.9,
+        'min_child_weight': 4,
+        'gamma': 0.4,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 0.4,  # the training step for each iteration
+        'eta': 1.9,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         # 'objective': 'binary:logistic'
         'objective': 'multi:softmax',
@@ -383,4 +383,4 @@ def run_cross_validation():
     print("auc: %s" % auc)
 
 
-run_parameter_sweep()
+run_train_model()
