@@ -271,4 +271,4 @@ def run_cross_validation():
     print("auc: %s" % auc)
 
 
-# run_parameter_sweep()
+run_parameter_sweep()
