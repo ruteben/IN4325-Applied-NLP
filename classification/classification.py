@@ -35,21 +35,21 @@ def get_data():
                     row_int.append(float(value))
                 data.append(row_int)
 
-    data_new = np.array(data)
-    data_pruned = get_best_features(data, 10)
-    # print(data_pruned)
-    return data_pruned
+    data = np.array(data)
+    return data
 
 
 def get_labels():
     truth = []
-    with jsonlines.open('../../NLP_data/truth.jsonl') as json_file:
-        for obj in json_file:
-            if obj['truthClass'] == 'clickbait':
-                truth.append(1)
-            else:
-                truth.append(0)
-
+    with open('../../NLP_data/preprocessed_truths.csv') as file:
+        datafile = csv.reader(file, delimiter=",")
+        i = 0
+        for row in datafile:
+            i += 1  # seems like it adds i twice?
+            if row and i > 1:
+                truth.append(int(row[102]))
+    truth = np.array(truth)
+    print(truth.shape)
     return np.array(truth)
 
 
@@ -387,7 +387,7 @@ def run_cross_validation(data, labels):
     print("auc: %s" % auc)
 
 
-# data = get_data()
-# labels = get_labels()
-#
-# run_parameter_sweep(data, labels)
+data = get_data()
+labels = get_labels()
+
+run_train_model(data, labels)
