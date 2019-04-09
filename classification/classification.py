@@ -87,15 +87,15 @@ def train_model(dtrain, dtest, labels_test, params):
     bst = xgb.train(params, dtrain)
     best_preds = bst.predict(dtest)
 
-    # accuracy = accuracy_score(labels_test, best_preds)
-    # recall = recall_score(labels_test, best_preds)
-    # precision = precision_score(labels_test, best_preds)
-    # auc = roc_auc_score(labels_test, best_preds)
-
-    accuracy = 0
-    recall = 0
-    precision = 0
+    accuracy = accuracy_score(labels_test, best_preds)
+    recall = recall_score(labels_test, best_preds)
+    precision = precision_score(labels_test, best_preds)
     auc = roc_auc_score(labels_test, best_preds)
+
+    # accuracy = 0
+    # recall = 0
+    # precision = 0
+    # auc = roc_auc_score(labels_test, best_preds)
 
     # print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
     # print("precision: %s" % precision)
