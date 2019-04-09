@@ -46,8 +46,7 @@ def get_data():
                     row_int.append(float(value))
                 data.append(row_int)
 
-    data_pruned = get_features(data)
-    return data_pruned
+    return np.array(data)
 
 
 def get_labels():
