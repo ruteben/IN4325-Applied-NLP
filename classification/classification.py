@@ -10,7 +10,7 @@ import jsonlines
 import csv
 
 
-def get_best_features(data, top):
+def get_best_features(data):
     array_best_features = [26, 23, 28, 19, 21, 17, 60, 29, 27, 25]
     pruned_data = []
     for object in range(0, len(data)):
@@ -19,6 +19,17 @@ def get_best_features(data, top):
             new_object.append(data[object][feature])
         pruned_data.append(new_object)
     return np.array(pruned_data)
+
+
+def get_features(data):
+        array_best_features = [92, 86, 93, 90, 84, 69, 94, 87, 66, 82]
+        pruned_data = []
+        for object in range(0, len(data)):
+            new_object = []
+            for feature in array_best_features:
+                new_object.append(data[object][feature])
+            pruned_data.append(new_object)
+        return np.array(pruned_data)
 
 
 def get_data():
@@ -35,8 +46,8 @@ def get_data():
                     row_int.append(float(value))
                 data.append(row_int)
 
-    data_array = np.array(data)
-    return data_array
+    data_pruned = get_features(data)
+    return data_pruned
 
 
 def get_labels():
@@ -80,6 +91,11 @@ def train_model(dtrain, dtest, labels_test, params):
     accuracy = accuracy_score(labels_test, best_preds)
     recall = recall_score(labels_test, best_preds)
     precision = precision_score(labels_test, best_preds)
+    auc = roc_auc_score(labels_test, best_preds)
+
+    accuracy = 0
+    recall = 0
+    precision = 0
     auc = roc_auc_score(labels_test, best_preds)
 
     # print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
@@ -197,27 +213,27 @@ def parameter_sweep_cross_validation(data, labels):
 
                     [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
 
-                    if precision_new > precision:
-                        precision = precision_new
-                        precision_params = [max_depth, min_child_weight, gamma, eta]
-
-                    if accuracy_new > accuracy:
-                        accuracy = accuracy_new
-                        accuracy_params = [max_depth, min_child_weight, gamma, eta]
-
-                    if recall_new > recall:
-                        recall = recall_new
-                        recall_params = [max_depth, min_child_weight, gamma, eta]
+                    # if precision_new > precision:
+                    #     precision = precision_new
+                    #     precision_params = [max_depth, min_child_weight, gamma, eta]
+                    #
+                    # if accuracy_new > accuracy:
+                    #     accuracy = accuracy_new
+                    #     accuracy_params = [max_depth, min_child_weight, gamma, eta]
+                    #
+                    # if recall_new > recall:
+                    #     recall = recall_new
+                    #     recall_params = [max_depth, min_child_weight, gamma, eta]
 
                     if auc_new > auc:
                         auc = auc_new
                         auc_params = [max_depth, min_child_weight, gamma, eta]
 
-                    avg_new = accuracy_new + recall_new
-
-                    if avg_new > avg:
-                        avg = avg_new
-                        avg_params = [max_depth, min_child_weight, gamma, eta]
+                    # avg_new = accuracy_new + recall_new
+                    #
+                    # if avg_new > avg:
+                    #     avg = avg_new
+                    #     avg_params = [max_depth, min_child_weight, gamma, eta]
 
     return [accuracy, precision, recall, auc, accuracy_params, recall_params, precision_params, auc_params, avg_params]
 

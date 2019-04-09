@@ -8,6 +8,7 @@ feature 60, gain 0.25937
 feature 29, gain 0.25482 
 feature 27, gain 0.24326 
 feature 25, gain 0.23108 
+
 feature 16, gain 0.20722 
 feature 24, gain 0.20161 
 feature 22, gain 0.19012 
@@ -18,6 +19,7 @@ feature 72, gain 0.09662
 feature 91, gain 0.07383 
 feature 57, gain 0.06505 
 feature 88, gain 0.05339 
+
 feature 92, gain 0.04374 
 feature 86, gain 0.04148 
 feature 93, gain 0.03857 
@@ -27,7 +29,8 @@ feature 69, gain 0.02850
 feature 94, gain 0.02830 
 feature 87, gain 0.02804 
 feature 66, gain 0.02486 
-feature 82, gain 0.02420 
+feature 82, gain 0.02420
+ 
 feature 34, gain 0.02409 
 feature 11, gain 0.02409 
 feature 89, gain 0.02295 
@@ -38,6 +41,7 @@ feature 95, gain 0.01978
 feature 10, gain 0.01900 
 feature 58, gain 0.01833 
 feature 83, gain 0.01801 
+
 feature 81, gain 0.01797 
 feature 6, gain 0.01576 
 feature 32, gain 0.01566 
