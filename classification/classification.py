@@ -87,15 +87,15 @@ def train_model(dtrain, dtest, labels_test, params):
     bst = xgb.train(params, dtrain)
     best_preds = bst.predict(dtest)
 
-    accuracy = accuracy_score(labels_test, best_preds)
-    recall = recall_score(labels_test, best_preds)
-    precision = precision_score(labels_test, best_preds)
-    auc = roc_auc_score(labels_test, best_preds)
-
-    # accuracy = 0
-    # recall = 0
-    # precision = 0
+    # accuracy = accuracy_score(labels_test, best_preds)
+    # recall = recall_score(labels_test, best_preds)
+    # precision = precision_score(labels_test, best_preds)
     # auc = roc_auc_score(labels_test, best_preds)
+
+    accuracy = 0
+    recall = 0
+    precision = 0
+    auc = roc_auc_score(labels_test, best_preds)
 
     # print("Number of posts classified as clickbait: %s" % np.count_nonzero(best_preds))
     # print("precision: %s" % precision)
@@ -140,9 +140,9 @@ def parameter_sweep(dtrain, dtest, labels_test):
                         'scale_pos_weight': 1,
                         'eta': eta,  # the training step for each iteration
                         'silent': 1,  # logging mode - quiet
-                        # 'objective': 'binary:hinge'
-                        'objective': 'multi:softmax',
-                        'num_class': 2
+                        'objective': 'binary:hinge'
+                        # 'objective': 'multi:softmax',
+                        # 'num_class': 2
                     }
 
                     [precision_new, recall_new, accuracy_new, auc_new] = train_model(dtrain, dtest, labels_test, params)
@@ -205,9 +205,9 @@ def parameter_sweep_cross_validation(data, labels):
                         'scale_pos_weight': 1,
                         'eta': eta,  # the training step for each iteration
                         'silent': 1,  # logging mode - quiet
-                        # 'objective': 'binary:hinge'
-                        'objective': 'multi:softmax',
-                        'num_class': 2
+                        'objective': 'binary:hinge'
+                        # 'objective': 'multi:softmax',
+                        # 'num_class': 2
                     }
 
                     [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
@@ -361,9 +361,9 @@ def run_cross_validation(data, labels):
         'scale_pos_weight': 1,
         'eta': 0.2,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
-        # 'objective': 'binary:logistic'
-        'objective': 'multi:softmax',
-        'num_class': 2
+        'objective': 'binary:hinge'
+        # 'objective': 'multi:softmax',
+        # 'num_class': 2
     }
 
     [precision, recall, accuracy, auc] = cross_validation(data, labels, params, 5)
@@ -384,9 +384,9 @@ def run_train_model(data, labels):
         'scale_pos_weight': 1,
         'eta': 1.9,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
-        # 'objective': 'binary:hinge'
-        'objective': 'multi:softmax',
-        'num_class': 2
+        'objective': 'binary:hinge'
+        # 'objective': 'multi:softmax',
+        # 'num_class': 2
     }
 
     [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
