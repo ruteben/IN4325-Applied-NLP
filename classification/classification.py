@@ -35,8 +35,8 @@ def get_data():
                     row_int.append(float(value))
                 data.append(row_int)
 
-    data = np.array(data)
-    return data
+    data_array = np.array(data)
+    return data_array
 
 
 def get_labels():
@@ -387,4 +387,4 @@ def run_train_model(data, labels):
 data = get_data()
 labels = get_labels()
 
-run_cross_validation(data, labels)
+run_parameter_sweep_cross_validation(data, labels)
