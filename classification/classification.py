@@ -260,31 +260,6 @@ def cross_validation(data, labels, params, folds):
     return [precision, recall, accuracy, auc]
 
 
-def run_train_model(data, labels):
-    params = {
-        'max_depth': 5,  # the maximum depth of each tree,
-        'min_child_weight': 5,
-        'gamma': 0.8,
-        'subsample': 0.8,
-        'colsample_bytree': 0.8,
-        'scale_pos_weight': 1,
-        'eta': 0.9,  # the training step for each iteration
-        'silent': 1,  # logging mode - quiet
-        # 'objective': 'binary:hinge'
-        'objective': 'multi:softmax',
-        'num_class': 2
-    }
-
-    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
-
-    [precision, recall, accuracy, auc] = train_model(dtrain, dtest, labels_test, params)
-
-    print("precision: %s" % precision)
-    print("recall: %s" % recall)
-    print("accuracy: %s" % accuracy)
-    print("auc: %s" % auc)
-
-
 def run_parameter_sweep(data, labels):
     [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
 
@@ -363,13 +338,13 @@ def run_parameter_sweep_cross_validation(data, labels):
 
 def run_cross_validation(data, labels):
     params = {
-        'max_depth': 2,  # the maximum depth of each tree,
-        'min_child_weight': 4,
-        'gamma': 0.4,
+        'max_depth': 7,  # the maximum depth of each tree,
+        'min_child_weight': 2,
+        'gamma': 0.7,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 2,  # the training step for each iteration
+        'eta': 0.2,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         # 'objective': 'binary:logistic'
         'objective': 'multi:softmax',
@@ -384,7 +359,32 @@ def run_cross_validation(data, labels):
     print("auc: %s" % auc)
 
 
+def run_train_model(data, labels):
+    params = {
+        'max_depth': 6,  # the maximum depth of each tree,
+        'min_child_weight': 3,
+        'gamma': 0.3,
+        'subsample': 0.8,
+        'colsample_bytree': 0.8,
+        'scale_pos_weight': 1,
+        'eta': 1.9,  # the training step for each iteration
+        'silent': 1,  # logging mode - quiet
+        # 'objective': 'binary:hinge'
+        'objective': 'multi:softmax',
+        'num_class': 2
+    }
+
+    [dtrain, dtest, labels_test] = create_DMatrices(data, labels, 0.2)
+
+    [precision, recall, accuracy, auc] = train_model(dtrain, dtest, labels_test, params)
+
+    print("precision: %s" % precision)
+    print("recall: %s" % recall)
+    print("accuracy: %s" % accuracy)
+    print("auc: %s" % auc)
+
+
 data = get_data()
 labels = get_labels()
 
-run_parameter_sweep_cross_validation(data, labels)
+run_cross_validation(data, labels)
