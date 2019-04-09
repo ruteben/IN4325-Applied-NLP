@@ -22,14 +22,14 @@ def get_best_features(data):
 
 
 def get_features(data):
-        array_best_features = [92, 86, 93, 90, 84, 69, 94, 87, 66, 82]
-        pruned_data = []
-        for object in range(0, len(data)):
-            new_object = []
-            for feature in array_best_features:
-                new_object.append(data[object][feature])
-            pruned_data.append(new_object)
-        return np.array(pruned_data)
+    array_best_features = [36]
+    pruned_data = []
+    for object in range(0, len(data)):
+        new_object = []
+        for feature in array_best_features:
+            new_object.append(data[object][feature])
+        pruned_data.append(new_object)
+    return np.array(pruned_data)
 
 
 def get_data():
@@ -46,6 +46,7 @@ def get_data():
                     row_int.append(float(value))
                 data.append(row_int)
 
+    data_pruned = get_features(data)
     return np.array(data)
 
 
@@ -59,7 +60,6 @@ def get_labels():
             if row and i > 1:
                 truth.append(int(row[102]))
     truth = np.array(truth)
-    print(truth.shape)
     return np.array(truth)
 
 
@@ -212,17 +212,17 @@ def parameter_sweep_cross_validation(data, labels):
 
                     [precision_new, recall_new, accuracy_new, auc_new] = cross_validation(data, labels, params, 5)
 
-                    if precision_new > precision:
-                        precision = precision_new
-                        precision_params = [max_depth, min_child_weight, gamma, eta]
-
-                    if accuracy_new > accuracy:
-                        accuracy = accuracy_new
-                        accuracy_params = [max_depth, min_child_weight, gamma, eta]
-
-                    if recall_new > recall:
-                        recall = recall_new
-                        recall_params = [max_depth, min_child_weight, gamma, eta]
+                    # if precision_new > precision:
+                    #     precision = precision_new
+                    #     precision_params = [max_depth, min_child_weight, gamma, eta]
+                    #
+                    # if accuracy_new > accuracy:
+                    #     accuracy = accuracy_new
+                    #     accuracy_params = [max_depth, min_child_weight, gamma, eta]
+                    #
+                    # if recall_new > recall:
+                    #     recall = recall_new
+                    #     recall_params = [max_depth, min_child_weight, gamma, eta]
 
                     if auc_new > auc:
                         auc = auc_new
@@ -353,13 +353,13 @@ def run_parameter_sweep_cross_validation(data, labels):
 
 def run_cross_validation(data, labels):
     params = {
-        'max_depth': 7,  # the maximum depth of each tree,
-        'min_child_weight': 2,
-        'gamma': 0.7,
+        'max_depth': 8,  # the maximum depth of each tree,
+        'min_child_weight': 3,
+        'gamma': 0.1,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 0.2,  # the training step for each iteration
+        'eta': 0.1,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         'objective': 'binary:hinge'
         # 'objective': 'multi:softmax',
@@ -376,13 +376,13 @@ def run_cross_validation(data, labels):
 
 def run_train_model(data, labels):
     params = {
-        'max_depth': 6,  # the maximum depth of each tree,
+        'max_depth': 8,  # the maximum depth of each tree,
         'min_child_weight': 3,
-        'gamma': 0.3,
+        'gamma': 0.1,
         'subsample': 0.8,
         'colsample_bytree': 0.8,
         'scale_pos_weight': 1,
-        'eta': 1.9,  # the training step for each iteration
+        'eta': 0.1,  # the training step for each iteration
         'silent': 1,  # logging mode - quiet
         'objective': 'binary:hinge'
         # 'objective': 'multi:softmax',
@@ -402,4 +402,4 @@ def run_train_model(data, labels):
 data = get_data()
 labels = get_labels()
 
-run_parameter_sweep_cross_validation(data, labels)
+run_cross_validation(data, labels)
