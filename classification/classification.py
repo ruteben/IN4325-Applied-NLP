@@ -22,7 +22,7 @@ def get_best_features(data):
 
 
 def get_features(data):
-    array_best_features = [36]
+    array_best_features = [26]
     pruned_data = []
     for object in range(0, len(data)):
         new_object = []
@@ -47,7 +47,7 @@ def get_data():
                 data.append(row_int)
 
     data_pruned = get_features(data)
-    return np.array(data)
+    return data_pruned
 
 
 def get_labels():
@@ -402,4 +402,4 @@ def run_train_model(data, labels):
 data = get_data()
 labels = get_labels()
 
-run_cross_validation(data, labels)
+run_parameter_sweep_cross_validation(data, labels)

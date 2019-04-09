@@ -6,6 +6,7 @@ import numpy as np
 data = classification.get_data()
 labels = classification.get_labels()
 
+
 def get_column(data, column_index):
     column = []
     length_data = len(data)
@@ -18,7 +19,6 @@ def calc_gains(data):
     gains = []
     amount_of_columns = data.shape[1]
     for column_index in range(0, amount_of_columns):
-        print(column_index)
         column = np.array(get_column(data, column_index))
         gain = info_gain.info_gain(labels, column)
         gains.append([column_index, gain])
