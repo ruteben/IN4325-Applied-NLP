@@ -139,7 +139,8 @@ def percent_of_formal_words(x):
     :return: ratio between formal and informal words of a content element
     :rtype: float
     """
-    return number_of_formal_words(x)/num_of_words(x)
+    num = num_of_words(x)
+    return number_of_formal_words(x)/num_of_words(x) if num > 0 else 0
 
 
 def percent_of_informal_words(x):
@@ -150,4 +151,5 @@ def percent_of_informal_words(x):
     :return: ratio between informal and formal words of a content element
     :rtype: float
     """
-    return number_of_informal_words(x)/num_of_words(x)
+    num = num_of_words(x)
+    return number_of_informal_words(x)/num_of_words(x) if num > 0 else 0

@@ -3,6 +3,9 @@ import io
 import json
 import csv
 import re
+from nltk.stem import PorterStemmer
+from nltk.tokenize import TweetTokenizer, word_tokenize
+from nltk.corpus import wordnet
 from preprocessing import image_related as ir
 from preprocessing import linguistic_analysis as la
 from preprocessing import abuser_detection as ad
@@ -16,26 +19,63 @@ def filter_post(post):
     :return: post with non-breaking spaces, non-alphabetical characters replaced by regular spaces
     :rtype: dict
     """
-    filtered_post = post
+    filtered_post = post.copy()
     pattern = r"[^a-zA-Z\s]+|\\u[a-z0-9]{4}|\\xa0"
-    filtered_post["postText"] = re.sub(pattern, " ", post["postText"][0]).strip().lower()
+
+    post_text = post["postText"]
+    if type(post_text) is not list:
+        post_text = [post_text]
+    filtered_post["postText"] = stem_content(re.sub(pattern, " ", post_text[0]))
+    filtered_post["postTextUnstemmed"] = re.sub(pattern, " ", post_text[0]).strip().lower()
+
     filtered_captions = []
+    filtered_captions_unstemmed = []
     for caption in post["targetCaptions"]:
-        filtered_caption = re.sub(pattern, " ", caption).strip().lower()
+        filtered_caption = stem_content(re.sub(pattern, " ", caption))
         if filtered_caption:
             filtered_captions.append(filtered_caption)
+        filtered_caption = re.sub(pattern, " ", caption).strip().lower()
+        if filtered_caption:
+            filtered_captions_unstemmed.append(filtered_caption)
     filtered_post["targetCaptions"] = filtered_captions
+    filtered_post["targetCaptionsUnstemmed"] = filtered_captions_unstemmed
+
     filtered_paragraphs = []
+    filtered_paragraphs_unstemmed = []
     for paragraph in post["targetParagraphs"]:
-        filtered_paragraph = re.sub(pattern, " ", paragraph).strip().lower()
+        filtered_paragraph = stem_content(re.sub(pattern, " ", paragraph))
         if filtered_paragraph:
             filtered_paragraphs.append(filtered_paragraph)
+        filtered_paragraph = re.sub(pattern, " ", paragraph).strip().lower()
+        if filtered_paragraph:
+            filtered_paragraphs_unstemmed.append(filtered_paragraph)
     filtered_post["targetParagraphs"] = filtered_paragraphs
-    filtered_post["targetTitle"] = re.sub(pattern, " ", post["targetTitle"]).strip().lower()
-    filtered_post["targetKeywords"] = re.sub(pattern, " ", post["targetKeywords"]).strip().lower()
-    filtered_post["targetDescription"] = re.sub(pattern, " ", post["targetDescription"]).strip().lower()
+    filtered_post["targetParagraphsUnstemmed"] = filtered_paragraphs_unstemmed
+
+    filtered_post["targetTitle"] = stem_content(re.sub(pattern, " ", post["targetTitle"]))
+    filtered_post["targetTitleUnstemmed"] = re.sub(pattern, " ", post["targetTitle"]).strip().lower()
+
+    filtered_post["targetKeywords"] = stem_content(re.sub(pattern, " ", post["targetKeywords"]))
+    filtered_post["targetKeywordsUnstemmed"] = re.sub(pattern, " ", post["targetKeywords"]).strip().lower()
+
+    filtered_post["targetDescription"] = stem_content(re.sub(pattern, " ", post["targetDescription"]))
+    filtered_post["targetDescriptionUnstemmed"] = re.sub(pattern, " ", post["targetDescription"]).strip().lower()
 
     return filtered_post
+
+
+def stem_content(content):
+    ps = PorterStemmer()
+    stemmed = []
+    if type(content) is list:
+        for word in content:
+            stemmed.append(ps.stem(word).strip())
+    if type(content) is str:
+        words = content.split(" ")
+        for word in words:
+            stemmed.append(ps.stem(word).strip())
+
+    return " ".join(stemmed).strip()
 
 
 def process(post, linguistic=True, image=True, abuser=True):
@@ -77,16 +117,16 @@ def process(post, linguistic=True, image=True, abuser=True):
                     la.num_of_common_words(fp["targetKeywords"], fp[content_list[i]])
             # number of formal words in content
             f["wordsFormal" + content_string1] =\
-                la.number_of_formal_words(fp[content_list[i]])
+                la.number_of_formal_words(fp[content_list[i] + "Unstemmed"])
             # number of informal words in content
             f["wordsInformal" + content_string1] =\
-                la.number_of_informal_words(fp[content_list[i]])
+                la.number_of_informal_words(fp[content_list[i] + "Unstemmed"])
             # percentage of formal words in content
             f["wordsFormalPercent" + content_string1] =\
-                la.percent_of_formal_words(fp[content_list[i]])
+                la.percent_of_formal_words(fp[content_list[i] + "Unstemmed"])
             # percentage of informal words in content
             f["wordsInformalPercent" + content_string1] =\
-                la.percent_of_informal_words(fp[content_list[i]])
+                la.percent_of_informal_words(fp[content_list[i] + "Unstemmed"])
             # ASSUMPTION: no need to determine ratio(a,b) and ratio(b,a)
             for j in range(i+1, len(content_list)):
                 # properly capitalize the string
